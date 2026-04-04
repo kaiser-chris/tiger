@@ -76,10 +76,38 @@ const TRIGGER: &[(Scopes, &str, Trigger)] = &[
         "ai_policy_reason_to_join",
         Block(&[("modifier", Item(Item::Modifier)), ("value", CompareValue)]),
     ),
-    (Scopes::Policy, "ai_policy_resolution_keep_bias", UncheckedTodo),
-    (Scopes::Policy, "ai_policy_resolution_propose_bias", UncheckedTodo),
-    (Scopes::Policy, "ai_policy_resolution_vote_bias", UncheckedTodo),
-    (Scopes::Country, "ai_unlock_unit_score", UncheckedTodo),
+    (
+        Scopes::Policy,
+        "ai_policy_resolution_keep_bias",
+        Block(&[
+            ("actor", Scope(Scopes::Country)),
+            ("international_organization", Scope(Scopes::InternationalOrganization)),
+            ("amount", CompareValue),
+        ]),
+    ),
+    (
+        Scopes::Policy,
+        "ai_policy_resolution_propose_bias",
+        Block(&[
+            ("actor", Scope(Scopes::Country)),
+            ("international_organization", Scope(Scopes::InternationalOrganization)),
+            ("amount", CompareValue),
+        ]),
+    ),
+    (
+        Scopes::Policy,
+        "ai_policy_resolution_vote_bias",
+        Block(&[
+            ("actor", Scope(Scopes::Country)),
+            ("international_organization", Scope(Scopes::InternationalOrganization)),
+            ("amount", CompareValue),
+        ]),
+    ),
+    (
+        Scopes::Country,
+        "ai_unlock_unit_score",
+        Block(&[("unit", Item(Item::UnitType)), ("value", CompareValue)]),
+    ),
     (Scopes::Religion, "ai_wants_convert", Boolean),
     (Scopes::None, "ai_will_do", CompareValue),
     (Scopes::None, "all_false", Control),
@@ -103,7 +131,7 @@ const TRIGGER: &[(Scopes, &str, Trigger)] = &[
         "antagonism",
         Block(&[("target", Scope(Scopes::Country)), ("value", CompareValue)]),
     ),
-    (Scopes::None, "any_false", UncheckedTodo),
+    (Scopes::None, "any_false", Control),
     (Scopes::Area, "area_average_control", CompareValue),
     (Scopes::Area, "area_average_integration", CompareValue),
     (Scopes::Area, "area_exploration_progress", CompareValue),
@@ -203,9 +231,19 @@ const TRIGGER: &[(Scopes, &str, Trigger)] = &[
     ),
     (Scopes::Country, "can_declare_no_cb_war_on", Scope(Scopes::Country)),
     (Scopes::Country, "can_declare_war_on", Scope(Scopes::Country)),
-    (Scopes::Country, "can_do_generic_action", UncheckedTodo),
+    (
+        Scopes::Country,
+        "can_do_generic_action",
+        Block(&[
+            ("generic_action", Item(Item::GenericAction)), // TODO: further parameters are unlimited "event_target = scope"
+        ]),
+    ),
     (Scopes::Unit, "can_execute_prisoners", Boolean),
-    (Scopes::Country, "can_find_trade_route", UncheckedTodo),
+    (
+        Scopes::Country,
+        "can_find_trade_route",
+        Block(&[("from", Scope(Scopes::Market)), ("to", Scope(Scopes::Market))]),
+    ),
     (Scopes::Country, "can_form", Scope(Scopes::FormableCountry)),
     (Scopes::Unit, "can_hire_prisoners_as_mercenaries", Boolean),
     (Scopes::InternationalOrganization, "can_initiate_policy_votes", Scope(Scopes::Country)),
@@ -228,26 +266,50 @@ const TRIGGER: &[(Scopes, &str, Trigger)] = &[
         "can_leave_international_organization",
         Scope(Scopes::InternationalOrganization),
     ),
-    (Scopes::Country, "can_make_subject_of", UncheckedTodo),
+    (
+        Scopes::Country,
+        "can_make_subject_of",
+        Block(&[
+            ("target", Scope(Scopes::Country)),
+            ("type", Scope(Scopes::SubjectType)),
+            ("?ignore_war_limitation", Boolean),
+        ]),
+    ),
     (Scopes::Country, "can_pay_price", Scope(Scopes::Price)),
     (Scopes::Country, "can_raise_army_levies", Boolean),
     (Scopes::Country, "can_raise_levies", Boolean),
     (Scopes::Country, "can_raise_navy_levies", Boolean),
     (Scopes::Unit, "can_ransom_prisoners", Boolean),
-    (Scopes::Country, "can_research_advance", UncheckedTodo),
+    (Scopes::Country, "can_research_advance", Item(Item::Advance)),
     (Scopes::Country, "can_rival", Scope(Scopes::Country)),
     (Scopes::Country, "can_see_religious_aspect", Scope(Scopes::ReligiousAspect)),
     (Scopes::Country, "can_see_situation", Scope(Scopes::Situation)),
     (Scopes::Unit, "can_sell_prisoners_into_slavery", Boolean),
     (Scopes::Character, "can_serve_in_cabinet_of", Scope(Scopes::Country)),
     (Scopes::Country, "can_share_maps_with", Scope(Scopes::Country)),
-    (Scopes::None, "can_start_tutorial_lesson", UncheckedTodo),
+    (Scopes::None, "can_start_tutorial_lesson", Item(Item::TutorialLesson)),
     (Scopes::Unit, "can_upgrade_subunit", Boolean),
     (Scopes::Unit, "can_upgrade_unit", Boolean),
-    (Scopes::Country, "can_use_agenda_bribe", UncheckedTodo),
+    (
+        Scopes::Country,
+        "can_use_agenda_bribe",
+        Block(&[
+            ("type", Scope(Scopes::ParliamentAgenda)),
+            ("estate_type", Scope(Scopes::EstateType)),
+            ("target", Scope(Scopes::Country)),
+        ]),
+    ),
     (Scopes::Country, "can_vote_in_parliament", Scope(Scopes::InternationalOrganization)),
-    (Scopes::Country, "cancel_exploration_utility", UncheckedTodo),
-    (Scopes::Country, "cb_creation_progress_against", UncheckedTodo),
+    (
+        Scopes::Country,
+        "cancel_exploration_utility",
+        Block(&[("area", Scope(Scopes::Area)), ("value", CompareValue)]),
+    ),
+    (
+        Scopes::Country,
+        "cb_creation_progress_against",
+        Block(&[("target", Scope(Scopes::Country)), ("value", CompareValue)]),
+    ),
     (
         Scopes::Location
             .union(Scopes::Country)
@@ -262,48 +324,105 @@ const TRIGGER: &[(Scopes, &str, Trigger)] = &[
         "character_modifier_strength",
         Block(&[("modifier", Item(Item::Modifier)), ("value", CompareValue)]),
     ),
-    (Scopes::Character, "character_name", UncheckedTodo),
-    (Scopes::Character, "character_nickname", UncheckedTodo),
-    (Scopes::Location, "climate", UncheckedTodo),
-    (Scopes::Country, "climate_count", UncheckedTodo),
-    (Scopes::Country, "climate_percent", UncheckedTodo),
-    (Scopes::Country, "colonial_charter_progress", UncheckedTodo),
-    (Scopes::Country, "colonial_charter_utility", UncheckedTodo),
-    (Scopes::ColonialCharter, "colonial_charter_value", UncheckedTodo),
-    (Scopes::Country, "colonial_maintenance", UncheckedTodo),
-    (Scopes::Country, "colonial_range", UncheckedTodo),
-    (Scopes::CombatSide, "combat_side_strength", UncheckedTodo),
-    (Scopes::InternationalOrganization, "combined_special_status_power", UncheckedTodo),
-    (Scopes::InternationalOrganization, "combined_unique_special_status_power", UncheckedTodo),
-    (Scopes::Value, "compare_value", UncheckedTodo),
-    (Scopes::Country.union(Scopes::InternationalOrganization), "complacency", UncheckedTodo),
+    (Scopes::Character, "character_name", Item(Item::Localization)),
+    (Scopes::Character, "character_nickname", Item(Item::Localization)),
+    (Scopes::Location, "climate", Item(Item::Climate)),
+    (
+        Scopes::Country,
+        "climate_count",
+        Block(&[("type", Scope(Scopes::Climate)), ("value", CompareValue)]),
+    ),
+    (
+        Scopes::Country,
+        "climate_percent",
+        Block(&[("type", Scope(Scopes::Climate)), ("value", CompareValue)]),
+    ),
+    (
+        Scopes::Country,
+        "colonial_charter_progress",
+        Block(&[
+            ("province_definition", Scope(Scopes::ProvinceDefinition)),
+            ("value", CompareValue),
+        ]),
+    ),
+    (
+        Scopes::Country,
+        "colonial_charter_utility",
+        Block(&[
+            ("province_definition", Scope(Scopes::ProvinceDefinition)),
+            ("value", CompareValue),
+        ]),
+    ),
+    (Scopes::ColonialCharter, "colonial_charter_value", CompareValue),
+    (Scopes::Country, "colonial_maintenance", CompareValue),
+    (Scopes::Country, "colonial_range", CompareValue),
+    (Scopes::CombatSide, "combat_side_strength", CompareValue),
+    (Scopes::InternationalOrganization, "combined_special_status_power", CompareValue),
+    (Scopes::InternationalOrganization, "combined_unique_special_status_power", CompareValue),
+    (Scopes::Value, "compare_value", CompareValue),
+    (Scopes::Country.union(Scopes::InternationalOrganization), "complacency", CompareValue),
     (
         Scopes::Country.union(Scopes::InternationalOrganization),
         "complacency_percentage",
-        UncheckedTodo,
+        CompareValue,
     ),
-    (Scopes::Country, "conquer_desire", UncheckedTodo),
-    (Scopes::Country, "conquistador_utility", UncheckedTodo),
+    (
+        Scopes::Country,
+        "conquer_desire",
+        Block(&[("target", Scope(Scopes::Country)), ("value", CompareValue)]),
+    ),
+    (
+        Scopes::Country,
+        "conquistador_utility",
+        Block(&[("area", Scope(Scopes::Area)), ("value", CompareValue)]),
+    ),
     (Scopes::Country, "controls", Scope(Scopes::Location)),
-    (Scopes::Country, "country_art_quality", UncheckedTodo),
+    (Scopes::Country, "country_art_quality", CompareValue),
     (
         Scopes::Country,
         "country_can_join_international_organization",
         Scope(Scopes::InternationalOrganization),
     ),
-    (Scopes::Country, "country_combined_special_status_power", UncheckedTodo),
-    (Scopes::Country, "country_combined_special_status_power_fraction", UncheckedTodo),
-    (Scopes::Country, "country_economical_base", UncheckedTodo),
-    (Scopes::Country, "country_estate_loan_size", UncheckedTodo),
+    (
+        Scopes::Country,
+        "country_combined_special_status_power",
+        Block(&[
+            ("international_organization", Scope(Scopes::InternationalOrganization)),
+            ("value", CompareValue),
+        ]),
+    ),
+    (
+        Scopes::Country,
+        "country_combined_special_status_power_fraction",
+        Block(&[
+            ("international_organization", Scope(Scopes::InternationalOrganization)),
+            ("value", CompareValue),
+        ]),
+    ),
+    (Scopes::Country, "country_economical_base", CompareValue),
+    (Scopes::Country, "country_estate_loan_size", CompareValue),
     (Scopes::None, "country_exists", Scope(Scopes::Country)),
-    (Scopes::InternationalOrganization, "country_has_been_member_for_years", UncheckedTodo),
+    (Scopes::InternationalOrganization, "country_has_been_member_for_years", Block(&[
+        ("country", Scope(Scopes::Country)),
+        ("value", CompareValue),
+    ])),
     (Scopes::Country, "country_has_disease", Scope(Scopes::Disease)),
     (Scopes::Country, "country_has_disease_outbreak", Scope(Scopes::DiseaseOutbreak)),
     (Scopes::Country, "country_has_estate", Scope(Scopes::Estate)),
-    (Scopes::InternationalOrganization, "country_has_special_status", UncheckedTodo),
-    (Scopes::Country, "country_highest_rated_special_status_power", UncheckedTodo),
-    (Scopes::Country, "country_interaction_acceptance", UncheckedTodo),
-    (Scopes::Country, "country_loan_capacity", UncheckedTodo),
+    (Scopes::InternationalOrganization, "country_has_special_status", Block(&[
+        ("type", Scope(Scopes::SpecialStatus)),
+        ("country", Scope(Scopes::Country)),
+    ])),
+    (Scopes::Country, "country_highest_rated_special_status_power", Block(&[
+        ("international_organization", Scope(Scopes::InternationalOrganization)),
+        ("value", CompareValue),
+    ])),
+    (Scopes::Country, "country_interaction_acceptance", Block(&[
+        ("type", Scope(Scopes::CountryInteraction)),
+        ("target", Scope(Scopes::Country)),
+        ("value", CompareValue),
+    ])),
+    (Scopes::Country, "country_loan_capacity", CompareValue),
     (
         Scopes::Location
             .union(Scopes::Country)
@@ -318,21 +437,30 @@ const TRIGGER: &[(Scopes, &str, Trigger)] = &[
         "country_modifier_strength",
         Block(&[("modifier", Item(Item::Modifier)), ("value", CompareValue)]),
     ),
-    (Scopes::Country, "country_rank_level", UncheckedTodo),
-    (Scopes::Country, "country_rank_level_on_date", UncheckedTodo),
-    (Scopes::Country, "country_strength", UncheckedTodo),
-    (Scopes::Country, "country_tax_base", UncheckedTodo),
-    (Scopes::Country, "country_total_army_levy_size", UncheckedTodo),
-    (Scopes::Country, "country_total_navy_levy_size", UncheckedTodo),
-    (Scopes::Country, "country_type", UncheckedTodo),
-    (Scopes::Language.union(Scopes::Dialect), "court_language_utility", UncheckedTodo),
-    (Scopes::Country, "court_maintenance", UncheckedTodo),
-    (Scopes::Country, "create_market_utility", UncheckedTodo),
-    (Scopes::Culture, "cultural_influence", UncheckedTodo),
-    (Scopes::Country, "cultural_maintenance", UncheckedTodo),
-    (Scopes::Culture, "cultural_tradition", UncheckedTodo),
-    (Scopes::Country, "cultural_unity", UncheckedTodo),
-    (Scopes::Culture, "cultural_view", UncheckedTodo),
+    (Scopes::Country, "country_rank_level", CompareValue),
+    (Scopes::Country, "country_rank_level_on_date", UncheckedTodo), // TODO: Undocumented, unused and probably a block
+    (Scopes::Country, "country_strength", CompareValue),
+    (Scopes::Country, "country_tax_base", CompareValue),
+    (Scopes::Country, "country_total_army_levy_size", CompareValue),
+    (Scopes::Country, "country_total_navy_levy_size", CompareValue),
+    (Scopes::Country, "country_type", Choice(COUNTRY_TYPES)),
+    (Scopes::Language.union(Scopes::Dialect), "court_language_utility", Block(&[
+        ("target", Scope(Scopes::Country)),
+        ("value", CompareValue),
+    ])),
+    (Scopes::Country, "court_maintenance", CompareValue),
+    (Scopes::Country, "create_market_utility", Block(&[
+        ("location", Scope(Scopes::Location)),
+        ("value", CompareValue),
+    ])),
+    (Scopes::Culture, "cultural_influence", CompareValue),
+    (Scopes::Country, "cultural_maintenance", CompareValue),
+    (Scopes::Culture, "cultural_tradition", CompareValue),
+    (Scopes::Country, "cultural_unity", CompareValue),
+    (Scopes::Culture, "cultural_view", Block(&[
+        ("target", Scope(Scopes::Culture)),
+        ("value", CompareValue),
+    ])),
     (
         Scopes::Location
             .union(Scopes::Province)
@@ -340,11 +468,18 @@ const TRIGGER: &[(Scopes, &str, Trigger)] = &[
             .union(Scopes::Area)
             .union(Scopes::Region)
             .union(Scopes::SubContinent)
-            .union(Scopes::Continent),
+            .union(Scopes::Continent)
+            .union(Scopes::ScriptedGeography),
         "culture_group_percentage",
-        UncheckedTodo,
+        Block(&[
+            ("culture_group", Scope(Scopes::CultureGroup)),
+            ("value", CompareValue),
+        ]),
     ),
-    (Scopes::Country, "culture_group_percentage_in_country", UncheckedTodo),
+    (Scopes::Country, "culture_group_percentage_in_country", Block(&[
+        ("culture_group", Scope(Scopes::CultureGroup)),
+        ("value", CompareValue),
+    ])),
     (
         Scopes::Location
             .union(Scopes::Province)
@@ -352,12 +487,22 @@ const TRIGGER: &[(Scopes, &str, Trigger)] = &[
             .union(Scopes::Area)
             .union(Scopes::Region)
             .union(Scopes::SubContinent)
-            .union(Scopes::Continent),
+            .union(Scopes::Continent)
+            .union(Scopes::ScriptedGeography),
         "culture_group_population",
-        UncheckedTodo,
+        Block(&[
+            ("culture_group", Scope(Scopes::CultureGroup)),
+            ("value", CompareValue),
+        ]),
     ),
-    (Scopes::Country, "culture_group_population_in_country", UncheckedTodo),
-    (Scopes::Culture, "culture_opinion_impact", UncheckedTodo),
+    (Scopes::Country, "culture_group_population_in_country", Block(&[
+        ("culture_group", Scope(Scopes::CultureGroup)),
+        ("value", CompareValue),
+    ])),
+    (Scopes::Culture, "culture_opinion_impact", Block(&[
+        ("culture", Scope(Scopes::Culture)),
+        ("value", CompareValue),
+    ])),
     (
         Scopes::Location
             .union(Scopes::Province)
@@ -365,12 +510,23 @@ const TRIGGER: &[(Scopes, &str, Trigger)] = &[
             .union(Scopes::Area)
             .union(Scopes::Region)
             .union(Scopes::SubContinent)
-            .union(Scopes::Continent),
+            .union(Scopes::Continent)
+            .union(Scopes::ScriptedGeography),
         "culture_percentage",
-        UncheckedTodo,
+        Block(&[
+            ("culture", Scope(Scopes::Culture)),
+            ("value", CompareValue),
+        ]),
     ),
-    (Scopes::Area, "culture_percentage_in_area", UncheckedTodo),
-    (Scopes::Country, "culture_percentage_in_country", UncheckedTodo),
+    (Scopes::Area, "culture_percentage_in_area", Block(&[
+        ("country", Scope(Scopes::Country)),
+        ("culture", Scope(Scopes::Culture)),
+        ("value", CompareValue),
+    ])),
+    (Scopes::Country, "culture_percentage_in_country", Block(&[
+        ("culture", Scope(Scopes::Culture)),
+        ("value", CompareValue),
+    ])),
     (
         Scopes::Location
             .union(Scopes::Province)
@@ -378,49 +534,65 @@ const TRIGGER: &[(Scopes, &str, Trigger)] = &[
             .union(Scopes::Area)
             .union(Scopes::Region)
             .union(Scopes::SubContinent)
-            .union(Scopes::Continent),
+            .union(Scopes::Continent)
+            .union(Scopes::ScriptedGeography),
         "culture_population",
-        UncheckedTodo,
+        Block(&[
+            ("culture", Scope(Scopes::Culture)),
+            ("value", CompareValue),
+        ]),
     ),
-    (Scopes::Country, "culture_population_in_country", UncheckedTodo),
+    (Scopes::Country, "culture_population_in_country", Block(&[
+        ("culture", Scope(Scopes::Culture)),
+        ("value", CompareValue),
+    ])),
     (
         Scopes::Country.union(Scopes::InternationalOrganization),
         "currency_percentage_towards_limit",
-        UncheckedTodo,
+        CompareValue,
     ),
-    (Scopes::Country, "currency_utility", UncheckedTodo),
+    (Scopes::Country, "currency_utility", Block(&[
+        ("currency", Item(Item::Currency)),
+        ("amount", CompareValue),
+    ])),
     (Scopes::None, "current_age", Item(Item::Age)),
-    (Scopes::None, "current_date", UncheckedTodo),
+    (Scopes::None, "current_date", Scope(Scopes::Date)),
     (Scopes::Country, "current_mission_task", Scope(Scopes::MissionTask)),
-    (Scopes::None, "current_month", UncheckedTodo),
-    (Scopes::Country, "current_ruler_term_years", UncheckedTodo),
-    (Scopes::None, "current_tooltip_depth", UncheckedTodo),
-    (Scopes::None, "current_year", UncheckedTodo),
-    (Scopes::None, "custom_description", UncheckedTodo),
-    (Scopes::None, "custom_tooltip", UncheckedTodo),
-    (Scopes::Character, "days_as_rebel", UncheckedTodo),
-    (Scopes::Character, "days_of_service_as_admiral", UncheckedTodo),
-    (Scopes::Character, "days_of_service_as_general", UncheckedTodo),
-    (Scopes::Character, "days_of_service_in_cabinet", UncheckedTodo),
-    (Scopes::Disaster, "days_since_disaster_end", UncheckedTodo),
-    (Scopes::Disaster, "days_since_disaster_start", UncheckedTodo),
-    (Scopes::Situation, "days_since_situation_end", UncheckedTodo),
-    (Scopes::Situation, "days_since_situation_start", UncheckedTodo),
+    (Scopes::None, "current_month", CompareValue),
+    (Scopes::Country, "current_ruler_term_years", CompareValue),
+    (Scopes::None, "current_tooltip_depth", CompareValue),
+    (Scopes::None, "current_year", CompareValue),
+    (Scopes::None, "custom_description", Control),
+    (Scopes::None, "custom_tooltip", Special),
+    (Scopes::Character, "days_as_rebel", CompareValue),
+    (Scopes::Character, "days_of_service_as_admiral", CompareValue),
+    (Scopes::Character, "days_of_service_as_general", CompareValue),
+    (Scopes::Character, "days_of_service_in_cabinet", CompareValue),
+    (Scopes::Disaster, "days_since_disaster_end", CompareValue),
+    (Scopes::Disaster, "days_since_disaster_start", CompareValue),
+    (Scopes::Situation, "days_since_situation_end", CompareValue),
+    (Scopes::Situation, "days_since_situation_start", CompareValue),
     (Scopes::None, "debug_log", UncheckedTodo),
-    (Scopes::None, "debug_log_details", UncheckedTodo),
+    (Scopes::None, "debug_log_details", Boolean),
     (Scopes::None, "debug_only", Boolean),
-    (Scopes::Country, "defensive_alliance_strength", UncheckedTodo),
+    (Scopes::Country, "defensive_alliance_strength", CompareValue),
     (Scopes::SubUnit, "definition_is_for_levy", Boolean),
     (Scopes::Market, "demands_goods", Scope(Scopes::Goods)),
     (Scopes::Market, "demands_goods_by_pops", Scope(Scopes::Goods)),
-    (Scopes::Country, "dependency_length_days", UncheckedTodo),
-    (Scopes::Country, "destroy_market_utility", UncheckedTodo),
+    (Scopes::Country, "dependency_length_days", Block(&[
+        ("target", Scope(Scopes::Country)),
+        ("value", CompareValue),
+    ])),
+    (Scopes::Country, "destroy_market_utility", Block(&[
+        ("location", Scope(Scopes::Location)),
+        ("value", CompareValue),
+    ])),
     (Scopes::Location, "development", CompareValue),
-    (Scopes::Country.union(Scopes::InternationalOrganization), "devotion", UncheckedTodo),
+    (Scopes::Country.union(Scopes::InternationalOrganization), "devotion", CompareValue),
     (
         Scopes::Country.union(Scopes::InternationalOrganization),
         "devotion_percentage",
-        UncheckedTodo,
+        CompareValue,
     ),
     (Scopes::Character, "dip", CompareValue),
     (Scopes::Country, "diplomatic_capacity_of_new_relation", UncheckedTodo),

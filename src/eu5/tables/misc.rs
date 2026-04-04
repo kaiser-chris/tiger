@@ -161,5 +161,13 @@ pub const CURRENCIES: &[&str] = &[
     "inflation",
 ];
 
+pub const COUNTRY_TYPES: &[&str] = &[
+    "location",
+    "pop",
+    "building",
+    "army",
+    "navy",
+];
+
 pub const CHARACTER_TRAIT_CATEGORY: &[&str] =
     &["admiral", "artist", "explorer", "general", "child", "ruler", "none"];
